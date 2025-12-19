@@ -4,6 +4,7 @@ interface Todo {
   task: string;
   completed: boolean;
   priority?: string;
+  type?: string;
 }
 
 interface Props {
@@ -11,21 +12,26 @@ interface Props {
 }
 
 const { todos = [] } = Astro.props;
+
+// Filter: Only show active (not completed) short-term tasks
+const displayTodos = todos.filter(t => !t.completed && t.type === 'short-term');
 ---
 
 <div class="todo-card">
   <div class="todo-header">
-    <span class="todo-title">To-Do List</span>
+    <span class="todo-title">Short-term Goals</span>
   </div>
   <div class="todo-list">
-    {todos.map(todo => (
-      <div class="todo-item" data-state={todo.completed ? "checked" : "unchecked"}>
-        <div class="todo-checkbox">
-          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="check-icon"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    {displayTodos.length > 0 ? (
+      displayTodos.map(todo => (
+        <div class="todo-item">
+          <div class="todo-checkbox"></div>
+          <span class="todo-text">{todo.task}</span>
         </div>
-        <span class="todo-text">{todo.task}</span>
-      </div>
-    ))}
+      ))
+    ) : (
+      <div class="empty-text">No active tasks</div>
+    )}
   </div>
 </div>
 
@@ -84,12 +90,7 @@ const { todos = [] } = Astro.props;
     align-items: center;
     gap: 0.8rem;
     padding: 0.35rem 0;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  .todo-item:hover {
-    opacity: 0.8;
+    cursor: default;
   }
 
   .todo-checkbox {
@@ -100,40 +101,22 @@ const { todos = [] } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
     flex-shrink: 0;
-  }
-
-  .check-icon {
-    opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.2s ease;
-    color: #fff;
   }
 
   .todo-text {
     font-size: 0.85rem;
     color: #444;
-    transition: all 0.2s ease;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  /* Checked State */
-  .todo-item[data-state="checked"] .todo-checkbox {
-    background: #FF69B4;
-    border-color: #FF69B4;
-  }
-
-  .todo-item[data-state="checked"] .check-icon {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .todo-item[data-state="checked"] .todo-text {
-    color: #aaa;
-    text-decoration: line-through;
+  .empty-text {
+    font-size: 0.8rem;
+    color: #999;
+    text-align: center;
+    padding-top: 1rem;
   }
 
   @media (min-width: 768px) {
@@ -143,15 +126,3 @@ const { todos = [] } = Astro.props;
     }
   }
 </style>
-
-<script>
-  // Simple client-side logic for todo toggling
-  const todoItems = document.querySelectorAll('.todo-item');
-  todoItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const currentState = item.getAttribute('data-state');
-      const newState = currentState === 'checked' ? 'unchecked' : 'checked';
-      item.setAttribute('data-state', newState);
-    });
-  });
-</script>
