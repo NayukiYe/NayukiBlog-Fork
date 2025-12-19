@@ -1,19 +1,127 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
+import galleryData from '../data/gallery.json';
 ---
 
 <PageLayout title="Gallery | Nayuki Blog">
   <div class="container">
     <h1>🖼️ 图库</h1>
     <p>收集我喜欢的图片与摄影作品。</p>
-    <div class="placeholder">
-      <p>🚧 页面建设中...</p>
-      <p>后续将更新：瀑布流图片展示，接入图像API。</p>
+    
+    <div class="gallery-masonry">
+      {galleryData.map((item) => (
+        <div class="gallery-item group">
+          <img src={item.url} alt={item.title} loading="lazy" />
+          <div class="overlay">
+            <h3 class="image-title">{item.title}</h3>
+            {item.tags && (
+              <div class="tags">
+                {item.tags.map((tag: string) => (
+                  <span class="tag">#{tag}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
   </div>
 </PageLayout>
 
 <style>
-  .container { max-width: 800px; margin: 0 auto; }
-  .placeholder { padding: 3rem; background: #f5f5f5; border-radius: 8px; text-align: center; margin-top: 2rem; color: #666; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+  
+  /* Masonry Layout using CSS Columns */
+  .gallery-masonry {
+    column-count: 1;
+    column-gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .gallery-masonry {
+      column-count: 2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gallery-masonry {
+      column-count: 3;
+    }
+  }
+
+  .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f0f0f0;
+    transform: translateZ(0); /* Fix for some rendering issues */
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.05);
+  }
+
+  /* Overlay Styles */
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+    padding: 4rem 1.5rem 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .gallery-item:hover .overlay {
+    opacity: 1;
+  }
+
+  .image-title {
+    color: #fff;
+    margin: 0 0 0.8rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+  }
+
+  .gallery-item:hover .image-title {
+    transform: translateY(0);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    transform: translateY(10px);
+    transition: transform 0.3s ease 0.1s; /* Slight delay */
+  }
+
+  .gallery-item:hover .tags {
+    transform: translateY(0);
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    color: #fff;
+    background: rgba(255,255,255,0.25);
+    padding: 0.25rem 0.7rem;
+    border-radius: 99px;
+    backdrop-filter: blur(4px);
+    font-weight: 500;
+  }
 </style>
