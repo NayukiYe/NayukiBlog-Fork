@@ -5,24 +5,28 @@ import ProjectCard from '../components/ProjectCard.astro';
 import ProfileCard from '../components/ProfileCard.astro';
 import GithubActivity from '../components/GithubActivity.astro';
 import TodoCard from '../components/TodoCard.astro';
+import DiaryCard from '../components/DiaryCard.astro';
 
 import postsData from '../data/posts.json';
 import projectsData from '../data/projects.json';
 import todosData from '../data/todos.json';
+import diariesData from '../data/diaries.json';
 
 const posts = postsData
   .sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf())
   .slice(0, 3);
 
-const projects = projectsData
-  .filter((project: any) => project.status === 'in-progress')
-  .slice(0, 2)
-  .map((project: any) => ({
-    title: project.name,
-    desc: project.description,
-    url: project.link,
-    tech: project.techStack
-  }));
+// Get today's diary
+const now = new Date();
+const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+const todaysDiary = diariesData.find(d => d.date === todayStr);
+
+const projects = projectsData.map((project) => ({
+  title: project.name,
+  desc: project.description,
+  url: project.link,
+  tech: project.techStack
+}));
 ---
 
 <PageLayout title="Nayuki Blog">
@@ -44,6 +48,19 @@ const projects = projectsData
     </section>
 
     <div class="divider"></div>
+
+    <!-- Today's Diary (Conditional) -->
+    {todaysDiary && (
+      <section class="section-block">
+        <div class="section-header">
+          <h2 class="section-title">Today's Diary</h2>
+          <a href="/diary" class="view-all">View all →</a>
+        </div>
+        <div class="diary-preview">
+          <DiaryCard {...todaysDiary} />
+        </div>
+      </section>
+    )}
 
     <!-- Latest Posts -->
     <section class="section-block">
@@ -164,6 +181,14 @@ const projects = projectsData
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  /* Diary Preview Styles */
+  .diary-preview {
+    position: relative;
+    padding-left: 2rem;
+    border-left: 2px solid #eee;
+    margin-left: 1rem;
   }
 
   .project-grid {
