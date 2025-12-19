@@ -1,12 +1,16 @@
 ---
-const todos = [
-  { text: "Refactor Blog Style", done: true },
-  { text: "Add Dark Mode", done: false },
-  { text: "Update Project List", done: false },
-  { text: "Write New Article", done: false },
-  { text: "Fix Mobile Layout", done: true },
-  { text: "Learn Rust", done: false },
-];
+interface Todo {
+  id: string;
+  task: string;
+  completed: boolean;
+  priority?: string;
+}
+
+interface Props {
+  todos?: Todo[];
+}
+
+const { todos = [] } = Astro.props;
 ---
 
 <div class="todo-card">
@@ -15,11 +19,11 @@ const todos = [
   </div>
   <div class="todo-list">
     {todos.map(todo => (
-      <div class="todo-item" data-state={todo.done ? "checked" : "unchecked"}>
+      <div class="todo-item" data-state={todo.completed ? "checked" : "unchecked"}>
         <div class="todo-checkbox">
           <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="check-icon"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </div>
-        <span class="todo-text">{todo.text}</span>
+        <span class="todo-text">{todo.task}</span>
       </div>
     ))}
   </div>

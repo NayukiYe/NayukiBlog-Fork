@@ -6,32 +6,20 @@ import ProfileCard from '../components/ProfileCard.astro';
 import GithubActivity from '../components/GithubActivity.astro';
 import TodoCard from '../components/TodoCard.astro';
 
-// Fetch posts from src/pages/posts/*.md
-const allPosts = await Astro.glob('./posts/*.md');
-const posts = allPosts
-  .sort((a: any, b: any) => new Date(b.frontmatter.date).valueOf() - new Date(a.frontmatter.date).valueOf())
-  .map((post: any) => ({
-    title: post.frontmatter.title,
-    date: post.frontmatter.date,
-    desc: post.frontmatter.desc,
-    url: post.url || '#',
-    tags: post.frontmatter.tags
-  }));
+import postsData from '../data/posts.json';
+import projectsData from '../data/projects.json';
+import todosData from '../data/todos.json';
 
-const projects = [
-  {
-    title: "NyeWeb",
-    desc: "个人作品集与知识管理系统，集成文章展示、项目管理等功能。采用前后端分离架构。",
-    url: "https://nyeweb.fun",
-    tech: ["Astro", "React", "FastAPI"]
-  },
-  {
-    title: "Face Login System",
-    desc: "基于PyQt5的人脸识别登录系统，整合MTCNN与FaceNet技术，支持活体验证。",
-    url: "/projects/face-login",
-    tech: ["Python", "PyQt5", "PyTorch"]
-  }
-];
+const posts = postsData
+  .sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf())
+  .slice(0, 3);
+
+const projects = projectsData.map((project) => ({
+  title: project.name,
+  desc: project.description,
+  url: project.link,
+  tech: project.techStack
+}));
 ---
 
 <PageLayout title="Nayuki Blog">
@@ -48,7 +36,7 @@ const projects = [
 
         <div class="profile-divider"></div>
 
-        <TodoCard />
+        <TodoCard todos={todosData} />
       </div>
     </section>
 

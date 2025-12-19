@@ -1,22 +1,14 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import projectsData from '../data/projects.json';
 
-const projects = [
-  {
-    title: "NyeWeb",
-    desc: "个人作品集与知识管理系统，集成文章展示、项目管理等功能。采用前后端分离架构。",
-    url: "https://nyeweb.fun",
-    tech: ["Astro", "React", "FastAPI"]
-  },
-  {
-    title: "Face Login System",
-    desc: "基于PyQt5的人脸识别登录系统，整合MTCNN与FaceNet技术，支持活体验证。",
-    url: "/projects/face-login",
-    tech: ["Python", "PyQt5", "PyTorch"]
-  },
-  // Add more projects here
-];
+const projects = projectsData.map((project) => ({
+  title: project.name,
+  desc: project.description,
+  url: project.link,
+  tech: project.techStack
+}));
 ---
 
 <PageLayout title="Projects | Nayuki Blog">
